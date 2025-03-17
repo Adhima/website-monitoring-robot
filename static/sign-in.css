@@ -1,6 +1,8 @@
 html,
 body {
   height: 100%;
+  background-color: #041833 !important;
+  color: white;
 }
 
 .form-signin {
@@ -12,14 +14,15 @@ body {
   z-index: 2;
 }
 
-.form-signin input[type="email"] {
+.form-signin input[type="text"] {
   margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
 }
 
 .form-signin input[type="password"] {
   margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+}
+
+.is-invalid {
+  border-color: red !important;
+  box-shadow: 0 0 5px red !important;
 }
