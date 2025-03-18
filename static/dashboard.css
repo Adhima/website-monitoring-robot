@@ -241,18 +241,10 @@ body {
 .btn-info {
     width: 4.8611%;
     height: 10%;
+    background-color: #1dc9a0;
     position: absolute;
     border-radius: 4px;
-    background-color: #1dc9a0;
-    display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    text-align: center;
-    font-size: 100%;
-    color: #fff;
-    font-family: Poppins;
     top: 10%;
     right: 0.6%;
 }
@@ -263,15 +255,7 @@ body {
     position: absolute;
     border-radius: 4px;
     background-color: #1dc9a0;
-    display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    text-align: center;
-    font-size: 100%;
-    color: #fff;
-    font-family: Poppins;
     top: 24%;
     right: 0.6%;
 }
@@ -282,15 +266,8 @@ body {
     position: absolute;
     border-radius: 4px;
     background-color: #1dc9a0;
-    display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    text-align: center;
     font-size: 100%;
-    color: #fff;
-    font-family: Poppins;
     top: 38%;
     right: 0.6%;
 }
@@ -346,5 +323,71 @@ body {
     align-items: center;
 }
 
+.box-date {
+    width: 14%;
+    height: 6%;
+    position: absolute;
+    border-radius: 10px;
+    background-color: #183a41;
+    left: 16%;
+    top: 57%;
+    transform: translate(-50%, -50%); 
+    text-align: right;
+    padding-right: 20px;
+    padding-top: 4px;
+    font-size: 20px;
+    color: #fff;
+    font-family: Poppins;
+}
 
+.date {
+    width: 30px; /* Ukuran ikon */
+    height: 30px;
+    position: absolute;
+    left: 1%;
+    top: 10%;
+    margin-left: 7px;
+}
+
+.box-time {
+    width: 14%;
+    height: 6%;
+    position: absolute;
+    border-radius: 10px;
+    background-color: #183a41;
+    left: 42.3%;
+    top: 57%;
+    transform: translate(-50%, -50%); 
+    text-align: right;
+    padding-right: 40px;
+    padding-top: 4px;
+    font-size: 20px;
+    color: #fff;
+    font-family: Poppins;
+}
+
+.clock {
+    width: 35px; /* Ukuran ikon */
+    height: 35px;
+    position: absolute;
+    left: 1%;
+    top: 7%;
+    margin-left: 10px;
+}
+
+.box-fast {
+    width: 10%;
+    height: 6%;
+    position: absolute;
+    border-radius: 10px;
+    background-color: #183a41;
+    left: 29.2%;
+    top: 57%;
+    transform: translate(-50%, -50%); 
+    text-align: center;
+    padding-top: 4px;
+    font-size: 20px;
+    color: #fff;
+    font-family: Poppins;
+}
 
