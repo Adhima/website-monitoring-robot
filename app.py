@@ -1,52 +1,59 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-from flask_mysqldb import MySQL
-import MySQLdb.cursors
-import re
+from flask import Flask, Response
+import cv2
+from ultralytics import YOLO
+import threading
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
 
-# Konfigurasi MySQL di Laragon
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'  # Sesuaikan dengan user MySQL Anda
-app.config['MYSQL_PASSWORD'] = ''  # Sesuaikan dengan password MySQL Anda
-app.config['MYSQL_DB'] = 'flask_login'  # Sesuaikan dengan nama database Anda
+# Load model dan set class ID target
+model = YOLO("yolov8n.pt")
+targets = {
+    "orang": {"camera_index": 0, "class_ids": [0]},   # class_id 0 = person
+    "mobil": {"camera_index": 1, "class_ids": [2]},   # class_id 2 = car
+    "botol": {"camera_index": 2, "class_ids": [39]}   # class_id 39 = bottle
+}
 
-mysql = MySQL(app)
+# Global untuk menyimpan frame hasil deteksi
+output_frames = {
+    "orang": None,
+    "mobil": None,
+    "botol": None
+}
 
-@app.route('/')
-def home():
-    return render_template('login.html')
+def detect_objects(name):
+    cap = cv2.VideoCapture(targets[name]["camera_index"])
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            continue
+        results = model(frame, stream=True, verbose=False)
+        for r in results:
+            for box, cls in zip(r.boxes.xyxy, r.boxes.cls):
+                if int(cls) in targets[name]["class_ids"]:
+                    x1, y1, x2, y2 = map(int, box)
+                    label = model.names[int(cls)]
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+        _, buffer = cv2.imencode('.jpg', frame)
+        output_frames[name] = buffer.tobytes()
 
-@app.route('/login', methods=['POST'])
-def login():
-    username = request.form.get('username')  # Menghindari error KeyError
-    password = request.form.get('password')
+# Start thread untuk masing-masing deteksi
+for key in targets:
+    t = threading.Thread(target=detect_objects, args=(key,))
+    t.daemon = True
+    t.start()
 
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
-    account = cursor.fetchone()
+# Route video untuk masing-masing objek
+@app.route('/video/<kategori>')
+def video_feed(kategori):
+    def generate():
+        while True:
+            frame = output_frames.get(kategori)
+            if frame:
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-    if account:
-        session['loggedin'] = True
-        session['id'] = account['id']
-        session['username'] = account['username']
-        return redirect(url_for('dashboard'))
-    else:
-        return render_template('login.html', error="Username atau password salah!", username=username)
-
-@app.route('/dashboard')
-def dashboard():
-    if 'loggedin' in session:
-        return render_template('dashboard.html', username=session["username"])
-    return redirect(url_for('home'))
-
-@app.route('/logout')
-def logout():
-    session.pop('loggedin', None)
-    session.pop('id', None)
-    session.pop('username', None)
-    return redirect(url_for('home'))
-
+# Run Flask
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)

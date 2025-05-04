@@ -1,0 +1,17 @@
+body {
+    height: 100%;
+    background-color: #041833 !important;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+.nav-tab a {
+    text-decoration: none;
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+.nav-tab a.active-tab {
+border-bottom: 2px solid #0d6efd; /* Bootstrap primary blue */
+}

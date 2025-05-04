@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Deteksi Objek</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 30px;
+        }
+        select {
+            font-size: 16px;
+            padding: 5px 10px;
+        }
+        .video-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Live Deteksi Objek</h2>
+    <label for="mode">Pilih Jenis Deteksi:</label>
+    <select id="mode" onchange="updateVideo()">
+        <option value="orang">Deteksi Orang</option>
+        <option value="mobil">Deteksi Mobil</option>
+        <option value="botol">Deteksi Botol</option>
+    </select>
+
+    <div class="video-container">
+        <img id="videoStream" src="https://luminolynx.my.id//video/orang" width="640" height="480">
+    </div>
+
+    <script>
+        function updateVideo() {
+            const mode = document.getElementById('mode').value;
+            const url = "https://luminolynx.my.id/video/" + mode;
+            document.getElementById('videoStream').src = url;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="../static/dashboard.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" />
+  </head>
+  <body class="d-flex align-items-center">
+    <div class="line-top"></div>
+    <div class="line-mid"></div>
+    <div class="line-left"></div>
+    <div class="line-right"></div>
+    <div class="line-bot"></div>
+    <div class="line-left-bot"></div>
+    <div class="line-left-bot-2"></div>
+    <div class="line-left-short"></div>
+    <div class="box-user">Hi User!</div>
+    <div class="temperature-box">
+      <span class="label">TEMPERATURE</span>
+      <span class="value">0°</span>
+    </div>
+    <div class="status-box">
+      <span class="label">STATUS</span>
+      <span class="value" id="status-text">OFF</span>
+    </div>
+    <div class="latency-box">
+      <span class="label">LATENCY</span>
+      <div class="value-container">
+        <span class="value">0</span>
+        <span class="unit">ms</span>
+      </div>
+    </div>
+    <div class="control-box">
+      <span class="position-absolute text-white-50 text-uppercase text-center" 
+      style="font-size: 10px; letter-spacing: 2px; top: 9px; left: 30px;">
+      CONTROL
+      </span>
+      <span style="font-size: 24px;">Auto</span>
+    </div>
+    <div class="framerate-box">
+      <span class="label">FRAME RATE</span>
+      <div class="value-container">
+        <span class="value">0</span>
+        <span class="unit">fps</span>
+      </div>
+    </div>
+    <div class="network-box">
+      <span class="position-absolute text-white-50 text-uppercase text-center" 
+            style="font-size: 10px; letter-spacing: 2px; top: 9px; left: 29px;">
+            NETWORK
+      </span>
+      <span style="font-size: 16px;" >DISCONNECT</span>
+    </div>
+    <div class="lamp-box">
+      <span class="label">LAMP</span>
+      <span class="value" id="lamp-status">OFF</span>
+    </div>
+    <div class="brake-box">
+      <span class="position-absolute text-white-50 text-uppercase text-center" 
+            style="font-size: 10px; letter-spacing: 2px; top: 9px; left: 39px;">
+            BRAKE
+      </span>
+      <span style="font-size: 20px;">Braking</span>
+    </div>
+    <div class="box-date">
+      <span id="date">DD/MM/YYYY</span>
+      <img class="date" src="../static/img/calendar.png">
+    </div>
+    <div class="box-time">
+      <img class="clock" src="../static/img/clock.svg">
+      <span id="time">DD/MM/YYYY</span>
+    </div>
+    <div class="box-fast" id="speed-value">0 Km/H</div>
+    <div class="box-stream">Camera Not Found</div>
+    <button class="btn-c cursor-not-allowed" type="button" disabled>Forward</button>
+    <button class="btn-d cursor-not-allowed" type="button" disabled>Reverse</button>
+    <button class="btn-e" onclick="toggleLamp()">Lamp</button>
+    <button id="toggle-btn" class="btn-manual btn-primary active" data-bs-toggle="button" aria-pressed="true">Manual Brake</button>    <!-- Tombol STOP -->
+    <button id="btn-stop" class="btn-b bg-red-500 text-white px-6 py-3 rounded-lg transition-all duration-300">
+      STOP
+    </button>
+    <!-- Tombol START -->
+    <button id="btn-start" class="btn-a bg-blue-500 text-white px-6 py-3 rounded-lg transition-all duration-300">
+      START
+    </button>
+
+    <!-- Tombol 1, 2, 3 (awalnya biru gelap dan dinonaktifkan) -->
+    <div class="flex gap-4 mt-4">
+      <button class="btn-f bg-blue-900 text-white px-6 py-3 rounded-lg cursor-not-allowed" disabled>Level 3</button>
+      <button class="btn-g bg-blue-900 text-white px-6 py-3 rounded-lg cursor-not-allowed" disabled>Level 2</button>
+      <button class="btn-h bg-blue-900 text-white px-6 py-3 rounded-lg cursor-not-allowed" disabled>Level 1</button>
+    </div>
+    <button class="btn-info shadow-lg transition-all duration-300 hover:shadow-inner hover:scale-95" type="button">
+      <img class="d-block mx-auto" src="../static/img/info.png" alt="Logo" width="40" height="40">
+    </button>
+    <button class="btn-data shadow-lg transition-all duration-300 hover:shadow-inner hover:scale-95" type="button">
+      <img class="d-block mx-auto" src="../static/img/data.png" alt="Logo" width="40" height="40">
+    </button>
+    <button id="btn-logout" class="btn-logout shadow-lg transition-all duration-300 hover:shadow-inner hover:scale-95" type="button" data-bs-toggle="modal" data-bs-target="#logoutModal">
+      <img class="d-block mx-auto" src="../static/img/logout.png" alt="Logo" width="40" height="40">
+    </button>
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content"  style="background-color: #041833;">
+          <div class="modal-header" >
+            <h5 class="modal-title" id="logoutModalLabel">Konfirmasi Keluar</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Apakah Anda yakin ingin keluar?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-danger" id="confirm-logout">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="speedometer-container">
+      <canvas id="speedometer"></canvas>
+    </div>
+  
+  <script src="../static/script/date_time.js"></script>
+  <script src="../static/script/button.js"></script>
+  <script src="../static/script/speedometer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
