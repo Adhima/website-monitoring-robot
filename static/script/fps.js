@@ -26,7 +26,14 @@ setInterval(() => {
   const videoStream = document.getElementById("video-stream");
   const src = videoStream?.src;
 
-  if (!src || src === "" || !src.includes("ipcam") && !src.includes("webcam")) {
+  if (
+    !src ||
+    src === "" ||
+    (!src.includes("luminolynx.my.id/human") &&
+      !src.includes("luminolynx.my.id/vehicle") &&
+      !src.includes("luminolynx.my.id/bantalan") &&
+      !src.includes("luminolynx.my.id/penambat"))
+  ) {
     // Kamera dimatikan atau src kosong
     document.getElementById("fps-value").textContent = 0;
     return;

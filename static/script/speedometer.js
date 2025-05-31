@@ -1,6 +1,6 @@
 // === Chart.js Setup ===
 const chartCtx = document.getElementById("speedChart").getContext("2d");
-const maxSpeed = 30;
+const maxSpeed = 6;
 
 const gaugeChart = new Chart(chartCtx, {
     type: "doughnut",
@@ -46,7 +46,7 @@ function drawOverlay(speed) {
     ctx.font = "16px Poppins";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    for (let i = 0; i <= maxSpeed; i += 5) {
+    for (let i = 0; i <= maxSpeed; i += 1) {
         const angle = Math.PI + (Math.PI * i / maxSpeed);
         const x = centerX + (radius + 20) * Math.cos(angle);
         const y = centerY + (radius + 20) * Math.sin(angle);
@@ -102,5 +102,5 @@ const socket = io(); // otomatis konek ke server Flask
 
 socket.on("speed_update", (data) => {
     const speed = data.speed;
-    updateSpeed(speed);
+    updateSpeed(speed);  // Perbarui tampilan speedometer
 });

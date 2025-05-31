@@ -2,66 +2,98 @@ const btnStop = document.getElementById("btn-stop");
 const btnStart = document.getElementById("btn-start");
 const statusText = document.getElementById("status-text");
 const actionButtons = document.querySelectorAll(".btn-f, .btn-g, .btn-h");
+const btnData = document.querySelector(".btn-data");
 
-let startActivated = false; // Status apakah START sudah ditekan
+let startActivated = false;
 
-// Ketika tombol START ditekan
+document.querySelector('.btn-data').addEventListener('click', () => {
+  window.location.href = "/data";
+});
+
+// Tombol START ditekan
 btnStart.addEventListener("click", () => {
-    if (!startActivated) {
-        startActivated = true;
-        btnStart.classList.replace("bg-blue-500", "bg-green-500"); // START jadi hijau
-        statusText.textContent = "ON";
-        // Aktifkan tombol 1, 2, 3 (tetap biru gelap sebelum diklik)
-        actionButtons.forEach(btn => {
-            btn.disabled = false;
-            btn.classList.replace("cursor-not-allowed", "cursor-pointer");
-        });
-    }
-});
+  if (!startActivated) {
+    startActivated = true;
+    btnStart.classList.replace("bg-blue-500", "bg-green-500");
+    statusText.textContent = "ON";
 
-// Ketika salah satu tombol 1, 2, atau 3 ditekan
-actionButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        if (!btn.disabled) {
-            // Reset semua tombol ke biru gelap
-            actionButtons.forEach(b => {
-                b.classList.replace("bg-green-500", "bg-blue-900");
-            });
-
-            // Ubah tombol yang diklik menjadi hijau
-            btn.classList.replace("bg-blue-900", "bg-green-500");
-        }
+    fetch("/motor", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ motor: true })
     });
-});
 
-// Ketika tombol STOP ditekan
-btnStop.addEventListener("click", () => {
-    startActivated = false;
-    btnStart.classList.replace("bg-green-500", "bg-blue-500"); // START kembali biru
-    statusText.textContent = "OFF";
-
-    // Reset tombol 1, 2, 3 ke biru gelap dan nonaktifkan
     actionButtons.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.replace("bg-green-500", "bg-blue-900");
-        btn.classList.replace("cursor-pointer", "cursor-not-allowed");
+      btn.disabled = false;
+      btn.classList.replace("cursor-not-allowed", "cursor-pointer");
     });
+  }
 });
 
-const btn = document.getElementById("toggle-btn");
+// Tombol Level 1/2/3
+actionButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (!btn.disabled) {
+      actionButtons.forEach(b => {
+        b.classList.replace("bg-green-500", "bg-blue-900");
+      });
 
-btn.addEventListener("click", () => {
-    btn.classList.toggle("bg-blue-500"); // Warna aktif (biru)
-    btn.classList.toggle("bg-green-500"); // Warna non-aktif (abu)
+      btn.classList.replace("bg-blue-900", "bg-green-500");
+
+      const level = btn.innerText.trim();
+      let targetSpeed = 0;
+      if (level === "Level 1") targetSpeed = 2;
+      else if (level === "Level 2") targetSpeed = 4;
+      else if (level === "Level 3") targetSpeed = 6;
+
+      fetch("/motor_speed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ speed: targetSpeed })
+      });
+    }
+  });
 });
 
-// Tombol Log Out
-  document.getElementById("confirm-logout").addEventListener("click", function() {
-    window.location.href = "/logout"; // Redirect ke route logout Flask
+// Tombol STOP ditekan
+btnStop.addEventListener("click", () => {
+  startActivated = false;
+  btnStart.classList.replace("bg-green-500", "bg-blue-500");
+  statusText.textContent = "OFF";
+
+  fetch("/motor", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ motor: false })
+  }).then(() => {
+    // Reset speed juga
+    fetch("/motor_speed", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ speed: 0 })
+    });
   });
 
+  actionButtons.forEach(btn => {
+    btn.disabled = true;
+    btn.classList.replace("bg-green-500", "bg-blue-900");
+    btn.classList.replace("cursor-pointer", "cursor-not-allowed");
+  });
+});
 
-// Tombol Toggle Lampu
+// Tombol Toggle Manual
+const btn = document.getElementById("toggle-btn");
+btn.addEventListener("click", () => {
+  btn.classList.toggle("bg-blue-500");
+  btn.classList.toggle("bg-green-500");
+});
+
+// Logout
+document.getElementById("confirm-logout").addEventListener("click", function () {
+  window.location.href = "/logout";
+});
+
+// Toggle Lampu
 function toggleLamp() {
   let lampStatus = document.getElementById("lamp-status");
   let lampBtn = document.querySelector(".btn-e");
@@ -71,41 +103,52 @@ function toggleLamp() {
   lampBtn.classList.toggle("active", newStatus === "ON");
 
   fetch("/lamp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lamp: newStatus === "ON" })
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ lamp: newStatus === "ON" })
   });
 }
 
+// Dropdown kamera
 document.addEventListener("DOMContentLoaded", function () {
   const dropdown = document.getElementById("dropdown");
   const button = document.getElementById("camera-select-btn");
 
-  // Toggle dropdown saat tombol diklik
   button.addEventListener("click", function (e) {
     e.stopPropagation();
     dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
   });
-
-  // Tutup dropdown saat klik di luar
-  document.addEventListener("click", function (event) {
-    if (!dropdown.contains(event.target) && event.target !== button) {
-      dropdown.style.display = "none";
-    }
-  });
 });
 
-// Fungsi setCamera final
+function toggleDropdown() {
+  const dropdown = document.getElementById("dropdown");
+  dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+}
+
+// Tutup dropdown jika klik di luar
+document.addEventListener("click", function (event) {
+  if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+    dropdown.style.display = "none";
+  }
+});
+
+// Fungsi Set Kamera
+let currentCamera = null;
 function setCamera(type) {
-  // Tutup dropdown
   const dropdown = document.getElementById("dropdown");
   dropdown.style.display = "none";
 
-  // Ganti source video stream
   const videoStream = document.getElementById("video-stream");
-  if (videoStream) {
-    videoStream.src = "/video_feed/" + type;
-  }
+  if (!videoStream) return;
 
-  // Jangan ubah tombol. Biarkan tetap <img>.
+  if (type === "stop") {
+    videoStream.src = "";
+    currentCamera = null;
+  } else {
+    const newSrc = "/video_feed/" + type;
+    if (videoStream.src !== location.origin + newSrc) {
+      videoStream.src = newSrc;
+    }
+    currentCamera = type;
+  }
 }

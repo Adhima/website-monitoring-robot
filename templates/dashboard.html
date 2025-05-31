@@ -11,8 +11,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gauge-chart-js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" />
   </head>
   <body class="d-flex align-items-center">
@@ -70,7 +70,7 @@
             style="font-size: 10px; letter-spacing: 2px; top: 9px; left: 39px;">
             BRAKE
       </span>
-      <span style="font-size: 20px;">Braking</span>
+      <span id="brake-indicator" class="position-absolute text-center" style="font-size: 20px;">Not Braking</span>
     </div>
     <div class="box-date">
       <span id="date">DD/MM/YYYY</span>
@@ -82,21 +82,25 @@
     </div>
     <div class="box-fast" id="speed">0 Km/H</div>
     <div class="box-stream">
-      <img class="stream" id="video-stream" src="" alt="Live Stream">
+      <video id="video-stream" class="stream" width="640" height="480" autoplay playsinline muted></video>
       <div id="camera-error" class="camera-error">Camera Error</div>
     </div>
-    <div class="btn-camera">
-      <button id="camera-select-btn" style="background-color: #1dc9a0; border-radius: 50%; padding: 0%; border: none;">
-        <img src="../static/img/camera.png" alt="camera" width="40" height="40">
+    <!-- Ganti seluruh blok kamera dropdown dengan ini -->
+    <div class="dropdown" style="position: absolute; top: 9%; left: 51.5%;">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="cameraDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="../static/img/camera.png" alt="camera" width="20" height="20">
       </button>
-      <div class="dropdown-content" id="dropdown" style="display: none;">
-        <a href="#" onclick="event.preventDefault(); setCamera('ipcam')">🚗 Deteksi Mobil</a>
-        <a href="#" onclick="event.preventDefault(); setCamera('webcam')">🧑 Deteksi Manusia</a>
-        <a href="#" onclick="event.preventDefault(); setCamera('stop')">🔴 Stop Kamera</a>        
-      </div>
-    </div>    
-    <button class="btn-c cursor-not-allowed" type="button" disabled>Forward</button>
-    <button class="btn-d cursor-not-allowed" type="button" disabled>Reverse</button>
+      <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="cameraDropdown">
+        <li><a class="dropdown-item" href="#" onclick="setCamera('vehicle')">🚗 Deteksi Mobil</a></li>
+        <li><a class="dropdown-item" href="#" onclick="setCamera('human')">🧑 Deteksi Anomali</a></li>
+        <li><a class="dropdown-item" href="#" onclick="setCamera('penambat')">🛣️ Deteksi Penambat</a></li>
+        <li><a class="dropdown-item" href="#" onclick="setCamera('bantalan')">🛤️ Deteksi Bantalan</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#" onclick="setCamera('stop')">🔴 Stop Kamera</a></li>
+      </ul>
+    </div>
+    <button id="btn-forward" class="btn-c cursor-not-allowed opacity-50" type="button" disabled>Forward</button>
+    <button id="btn-reverse" class="btn-d cursor-not-allowed opacity-50" type="button" disabled>Reverse</button>
     <button class="btn-e" onclick="toggleLamp()">Lamp</button>
     <button id="toggle-btn" class="btn-manual btn-primary active" data-bs-toggle="button" aria-pressed="true">Manual Brake</button>    <!-- Tombol STOP -->
     <button id="btn-stop" class="btn-b bg-red-500 text-white px-6 py-3 rounded-lg transition-all duration-300">
@@ -109,9 +113,9 @@
 
     <!-- Tombol 1, 2, 3 (awalnya biru gelap dan dinonaktifkan) -->
     <div class="flex gap-4 mt-4">
-      <button class="btn-f bg-blue-900 text-white px-6 py-3 rounded-lg cursor-not-allowed" disabled>Level 3</button>
-      <button class="btn-g bg-blue-900 text-white px-6 py-3 rounded-lg cursor-not-allowed" disabled>Level 2</button>
-      <button class="btn-h bg-blue-900 text-white px-6 py-3 rounded-lg cursor-not-allowed" disabled>Level 1</button>
+      <button class="btn-f bg-blue-900 text-white px-6 py-3 rounded-lg cursor-not-allowed opacity-50" disabled>Level 3</button>
+      <button class="btn-g bg-blue-900 text-white px-6 py-3 rounded-lg cursor-not-allowed opacity-50" disabled>Level 2</button>
+      <button class="btn-h bg-blue-900 text-white px-6 py-3 rounded-lg cursor-not-allowed opacity-50" disabled>Level 1</button>
     </div>
     <button class="btn-info shadow-lg transition-all duration-300 hover:shadow-inner hover:scale-95" type="button">
       <img class="d-block mx-auto" src="../static/img/info.png" alt="Logo" width="40" height="40">
@@ -146,10 +150,10 @@
     </div>
   
   <script src="../static/script/date_time.js"></script>
-  <script src="../static/script/button_final_dashboard.js"></script>
+  <script src="../static/script/button.js"></script>
   <script src="../static/script/speedometer.js"></script>
-  <script src="../static/script/fps.js"></script>
-  <script>
-  </script>  
+  <script src="../static/script/temperature.js"></script>
+  <script src="../static/script/status.js"></script>
+  <script src="../static/script/webrtc_human.js"></script>
 </body>
 </html>
